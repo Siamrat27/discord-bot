@@ -2,6 +2,7 @@ import discord
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
+from keep_alive import keep_alive  # Import keep_alive function
 
 # Load environment variables from .env file
 load_dotenv()
@@ -51,6 +52,9 @@ async def on_message(message):
         except Exception as e:
             print("Gemini API error:", e)
             await message.channel.send("❌ Error getting response from Gemini.")
+
+# ==== Keep the bot alive with a web service ====
+keep_alive()  # Call the keep_alive function
 
 # ==== Start the bot ====
 client.run(DISCORD_BOT_TOKEN)
