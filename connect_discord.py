@@ -1,9 +1,14 @@
 import discord
 import google.generativeai as genai
+from dotenv import load_dotenv
+import os
 
-# ==== Replace with your actual API keys ====
-GEMINI_API_KEY = "AIzaSyAEyasDKT1gNlKJa1UJOs-9F117yb_g33k"
-DISCORD_BOT_TOKEN = "MTM0MzA5NTgxMDAxNDk2OTk4Nw.GY_yFf.1NqlElXh-RIPLDpkNtX_2cvSQjC2Mopmsv8prc"
+# Load environment variables from .env file
+load_dotenv()
+
+# ==== Get the API keys from .env file ====
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
 # ==== Configure Gemini ====
 genai.configure(api_key=GEMINI_API_KEY)
@@ -49,7 +54,3 @@ async def on_message(message):
 
 # ==== Start the bot ====
 client.run(DISCORD_BOT_TOKEN)
-
-
-
-
