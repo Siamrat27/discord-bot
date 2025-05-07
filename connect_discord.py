@@ -35,7 +35,7 @@ async def on_message(message):
 
     # !test command
     if content == "!test":
-        await message.channel.send("✅ Test successful! I'm alive and listening.")
+        await message.channel.send("✅Hi Kong Test successful! I'm alive and listening.")
         return
 
     # !ask command
@@ -47,9 +47,12 @@ async def on_message(message):
 
         await message.channel.typing()
         try:
-            response = model.generate_content(user_input)
-            your_name = "Ks"  # 🔒 Your hardcoded name
-            await message.channel.send(f"{your_name}, here's my answer:\n{response.text}")
+            # Prefix prompt with instruction to use your name
+            your_name = "Kong"
+            prompt = f"Please reply as if you're speaking directly to someone named {your_name}. {user_input}"
+
+            response = model.generate_content(prompt)
+            await message.channel.send(response.text)
         except Exception as e:
             print("Gemini API error:", e)
             await message.channel.send("❌ Error getting response from Gemini.")
