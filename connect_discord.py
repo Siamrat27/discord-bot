@@ -48,7 +48,8 @@ async def on_message(message):
         await message.channel.typing()
         try:
             response = model.generate_content(user_input)
-            await message.channel.send(response.text)
+            your_name = "Ks"  # 🔒 Your hardcoded name
+            await message.channel.send(f"{your_name}, here's my answer:\n{response.text}")
         except Exception as e:
             print("Gemini API error:", e)
             await message.channel.send("❌ Error getting response from Gemini.")
