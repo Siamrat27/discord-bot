@@ -103,7 +103,7 @@ async def daily_message_task():
                 f"Good morning Kong! Here is the weather and air quality update for Bangkok:\n\n"
                 f"Weather Info:\n{weather_text}\n\n"
                 f"Air Quality Info:\n{pm25_data}\n\n"
-                f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long."
+                f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long.(unit: temp:°C, pm2.5:µg/m³)"
             )
 
             response = model.generate_content(prompt)
@@ -141,7 +141,7 @@ async def on_message(message):
             f"Here is the current weather and air quality update for Bangkok:\n\n"
             f"Weather Info:\n{weather_text}\n\n"
             f"Air Quality Info:\n{pm25_data}\n\n"
-            f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long."
+            f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long.(unit: temp:°C, pm2.5:µg/m³)"
         )
 
         try:
@@ -149,7 +149,7 @@ async def on_message(message):
             await message.channel.send(response.text)
         except Exception as e:
             print("Gemini API error:", e)
-            await message.channel.send("❌ Error getting response from Gemini.")
+            await message.channel.send("❌ Error getting response from Gemini. Try again later")
         return
 
     # !ask command
@@ -167,7 +167,7 @@ async def on_message(message):
             await message.channel.send(response.text)
         except Exception as e:
             print("Gemini API error:", e)
-            await message.channel.send("❌ Error getting response from Gemini.")
+            await message.channel.send("❌ Error getting response from Gemini. Try again later")
         return
 
     # Follow-up continuation
