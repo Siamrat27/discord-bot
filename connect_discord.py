@@ -34,6 +34,7 @@ def get_scraped_weather():
         soup = BeautifulSoup(response.content, "html.parser")
         weather_data = {}
 
+        # Extract main weather block
         qlook = soup.find("div", id="qlook")
         if qlook:
             temp = qlook.find("div", class_="h2")
@@ -55,10 +56,26 @@ def get_scraped_weather():
                         weather_data["Forecast"] = soup_line.replace("Forecast:", "").strip()
                     elif "Wind:" in soup_line:
                         weather_data["Wind"] = soup_line.replace("Wind:", "").strip()
+
+        # Extract humidity and current time from the side table
+        table = soup.find("table", class_="table--left")
+        if table:
+            rows = table.find_all("tr")
+            for row in rows:
+                header = row.find("th").text.strip().rstrip(":")
+                value = row.find("td").text.strip()
+                if header == "Humidity":
+                    weather_data[header] = value
+                elif header == "Current Time":
+                    weather_data["Current Time"] = value  # Extract the current time
+
         return weather_data
+
     except Exception as e:
         print("Weather scraping error:", e)
         return "Couldn't fetch weather."
+
+
 
 # Function to scrape PM2.5 in Bangkok
 def get_scraped_pm25():
@@ -98,12 +115,13 @@ async def daily_message_task():
             weather_lines = [f"{k}: {v}" for k, v in weather_data.items()]
             weather_text = "\n".join(weather_lines)
 
-            # Build the prompt with both weather and PM2.5 info
+            current_time = weather_data.get("Current Time", "unknown time")
             prompt = (
-                f"Good morning Kong! Here is the weather and air quality update for Bangkok:\n\n"
-                f"Weather Info:\n{weather_text}\n\n"
-                f"Air Quality Info:\n{pm25_data}\n\n"
-                f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long.(unit: temp:°C, pm2.5:µg/m³)"
+                f"Kong, here's Bangkok's weather update (Local Time: {current_time}):\n\n"
+                f"{weather_text}\n\n"
+                f"{pm25_data}\n\n"
+                f"Give him current time/date and give Kong a short, friendly suggestion based on temp, humidity, and PM2.5 (units: °C, %, µg/m³)."
+                f"If humidity is high do not forget to tell him to prepare umbrella"
             )
 
             response = model.generate_content(prompt)
@@ -137,11 +155,13 @@ async def on_message(message):
         weather_lines = [f"{k}: {v}" for k, v in weather_data.items()]
         weather_text = "\n".join(weather_lines)
 
+        current_time = weather_data.get("Current Time", "unknown time")
         prompt = (
-            f"Here is the current weather and air quality update for Bangkok:\n\n"
-            f"Weather Info:\n{weather_text}\n\n"
-            f"Air Quality Info:\n{pm25_data}\n\n"
-            f"Give Kong a suggestion message based on the weather and air quality. Make it easy to read, not too long.(unit: temp:°C, pm2.5:µg/m³)"
+            f"Kong, here's Bangkok's weather information):\n\n"
+            f"{weather_text}\n\n"
+            f"{pm25_data}\n\n"
+            f"Give him current time/date and give Kong a short, friendly suggestion based on temp, humidity, and PM2.5 (units: °C, %, µg/m³)."
+            f"If humidity is high do not forget to tell him to prepare umbrella"
         )
 
         try:
